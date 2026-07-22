@@ -581,6 +581,61 @@
         .replaceAll("'", "&#039;");
     }
 
+    function decodeUtf8Text(value) {
+      if (typeof value !== "string") return value;
+
+      try {
+        return new TextDecoder("utf-8", { fatal: false }).decode(new TextEncoder().encode(value));
+      } catch {
+        return value;
+      }
+    }
+
+    function normalizeApiData(data) {
+      if (!data || typeof data !== "object") return data;
+
+      const normalized = {
+        ...data,
+        meta: data.meta ? { ...data.meta } : data.meta,
+        quota: data.quota ? { ...data.quota } : data.quota,
+        days: Array.isArray(data.days) ? data.days.map((day) => ({
+          ...day,
+          topic: decodeUtf8Text(day.topic),
+          angle: decodeUtf8Text(day.angle),
+          pillar: decodeUtf8Text(day.pillar),
+          format: decodeUtf8Text(day.format),
+          content_type: decodeUtf8Text(day.content_type),
+          status: decodeUtf8Text(day.status)
+        })) : []
+      };
+
+      if (normalized.meta) {
+        normalized.meta.activity = decodeUtf8Text(normalized.meta.activity);
+        normalized.meta.audience = decodeUtf8Text(normalized.meta.audience);
+        normalized.meta.main_goal = decodeUtf8Text(normalized.meta.main_goal);
+        normalized.meta.platform = decodeUtf8Text(normalized.meta.platform);
+        normalized.meta.tone = decodeUtf8Text(normalized.meta.tone);
+        normalized.meta.angle = decodeUtf8Text(normalized.meta.angle);
+
+        if (Array.isArray(normalized.meta.pillars)) {
+          normalized.meta.pillars = normalized.meta.pillars.map((pillar) => ({
+            ...pillar,
+            name: decodeUtf8Text(pillar.name),
+            description: decodeUtf8Text(pillar.description),
+            value_logic: decodeUtf8Text(pillar.value_logic)
+          }));
+        }
+      }
+
+      return normalized;
+    }
+
+    async function parseJsonUtf8(response) {
+      const buffer = await response.arrayBuffer();
+      const text = new TextDecoder("utf-8").decode(buffer);
+      return JSON.parse(text);
+    }
+
     function formatGoal(goal) {
       if (goal === "visibilite") return "visibilité";
       if (goal === "credibilite") return "crédibilité";
@@ -874,7 +929,8 @@
           body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
+        const rawData = await parseJsonUtf8(response);
+        const data = normalizeApiData(rawData);
 
         if (!response.ok) {
           if (response.status === 429 && data?.detail?.message) {
@@ -909,4 +965,4 @@
     renderSavedIdeas();
   </script>
 </body>
-              </html>
+  </html>

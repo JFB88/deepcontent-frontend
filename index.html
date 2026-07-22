@@ -13,11 +13,13 @@
       --bg: #f7f6f2;
       --surface: #ffffff;
       --surface-2: #f3f0ec;
+      --surface-3: #ece8e2;
       --text: #1f1d19;
       --muted: #6f6b63;
       --border: rgba(31, 29, 25, 0.12);
       --primary: #01696f;
       --primary-hover: #0c4e54;
+      --primary-soft: #e4f0ef;
       --success: #2f6b2f;
       --error: #9e2f5f;
       --radius: 16px;
@@ -25,9 +27,7 @@
       --container: 860px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -200,19 +200,34 @@
       cursor: not-allowed;
     }
 
+    .button.secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .button.secondary:hover {
+      background: var(--surface-3);
+    }
+
+    .button.ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid rgba(1, 105, 111, 0.22);
+    }
+
+    .button.ghost:hover {
+      background: var(--primary-soft);
+    }
+
     .status {
       min-height: 22px;
       font-size: 14px;
       color: var(--muted);
     }
 
-    .status.success {
-      color: var(--success);
-    }
-
-    .status.error {
-      color: var(--error);
-    }
+    .status.success { color: var(--success); }
+    .status.error { color: var(--error); }
 
     .result-meta {
       display: grid;
@@ -221,7 +236,8 @@
     }
 
     .pillars,
-    .days {
+    .days,
+    .saved-days {
       display: grid;
       gap: 12px;
     }
@@ -246,6 +262,11 @@
       border-radius: 14px;
       padding: 14px;
       background: var(--surface);
+    }
+
+    .item.saved {
+      border-color: rgba(1, 105, 111, 0.3);
+      background: #f5faf9;
     }
 
     .item-top {
@@ -280,6 +301,16 @@
       background: var(--surface-2);
     }
 
+    .item-actions {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .save-btn {
+      min-height: 48px;
+    }
+
     .empty {
       color: var(--muted);
       padding: 8px 0 0;
@@ -293,6 +324,38 @@
 
     .hidden {
       display: none;
+    }
+
+    .result-actions {
+      margin-top: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .saved-section {
+      margin-top: 24px;
+      padding-top: 4px;
+    }
+
+    .saved-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .saved-count {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .session-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -330,65 +393,35 @@
             <div class="grid two">
               <div class="field">
                 <label for="activity">Activité</label>
-                <input
-                  id="activity"
-                  name="activity"
-                  placeholder="consultant B2B"
-                  required
-                  autocomplete="organization-title"
-                />
+                <input id="activity" name="activity" placeholder="consultant B2B" required />
               </div>
 
               <div class="field">
                 <label for="audience">Audience</label>
-                <input
-                  id="audience"
-                  name="audience"
-                  placeholder="fondateurs SaaS"
-                  required
-                />
+                <input id="audience" name="audience" placeholder="fondateurs SaaS" required />
               </div>
             </div>
 
             <div class="grid two">
               <div class="field">
                 <label for="main_goal">Objectif principal</label>
-                <input
-                  id="main_goal"
-                  name="main_goal"
-                  placeholder="signer 3 clients"
-                  required
-                />
+                <input id="main_goal" name="main_goal" placeholder="signer 3 clients" required />
               </div>
 
               <div class="field">
                 <label for="platform">Plateforme</label>
-                <input
-                  id="platform"
-                  name="platform"
-                  placeholder="LinkedIn"
-                  required
-                />
+                <input id="platform" name="platform" placeholder="LinkedIn" required />
               </div>
             </div>
 
             <div class="field">
               <label for="tone">Ton</label>
-              <input
-                id="tone"
-                name="tone"
-                placeholder="direct, clair, pro"
-                required
-              />
+              <input id="tone" name="tone" placeholder="direct, clair, pro" required />
             </div>
 
             <div class="field">
               <label for="angle">Angle</label>
-              <textarea
-                id="angle"
-                name="angle"
-                placeholder="contenu de fond et preuve"
-              ></textarea>
+              <textarea id="angle" name="angle" placeholder="contenu de fond et preuve"></textarea>
             </div>
 
             <div class="actions">
@@ -404,7 +437,7 @@
         <div class="card-inner">
           <h2>Résultat</h2>
           <p class="card-subtitle">
-            Ton plan de contenu généré s’affichera ici.
+            Garde uniquement les idées que tu préfères. Ta sélection reste disponible tant que tu gardes cette page ouverte.
           </p>
 
           <div id="emptyState" class="empty">
@@ -423,6 +456,28 @@
               <div class="pill">Plan sur 30 jours</div>
               <div class="days" id="daysList" style="margin-top: 12px;"></div>
             </section>
+
+            <section class="saved-section">
+              <div class="saved-head">
+                <div class="pill">Ma sélection</div>
+                <div class="saved-count" id="savedCount">0 idée gardée</div>
+              </div>
+
+              <div id="savedEmpty" class="empty">
+                Tu n’as encore gardé aucune idée.
+              </div>
+
+              <div class="saved-days" id="savedDaysList"></div>
+
+              <p class="session-note">
+                Les idées gardées restent disponibles pendant cette session uniquement.
+              </p>
+            </section>
+
+            <div class="result-actions">
+              <button class="button secondary" id="regenBottomBtn" type="button">Regénérer ce calendrier</button>
+              <button class="button ghost" id="clearSavedBtn" type="button">Vider ma sélection</button>
+            </div>
           </div>
 
           <p class="footer-note">
@@ -438,6 +493,8 @@
 
     const form = document.getElementById("calendarForm");
     const submitBtn = document.getElementById("submitBtn");
+    const regenBottomBtn = document.getElementById("regenBottomBtn");
+    const clearSavedBtn = document.getElementById("clearSavedBtn");
     const statusEl = document.getElementById("status");
     const quotaStatus = document.getElementById("quotaStatus");
     const emptyState = document.getElementById("emptyState");
@@ -445,6 +502,12 @@
     const resultMeta = document.getElementById("resultMeta");
     const pillarsList = document.getElementById("pillarsList");
     const daysList = document.getElementById("daysList");
+    const savedDaysList = document.getElementById("savedDaysList");
+    const savedEmpty = document.getElementById("savedEmpty");
+    const savedCount = document.getElementById("savedCount");
+
+    let currentDays = [];
+    let savedIdeas = [];
 
     function setStatus(message, type = "") {
       statusEl.textContent = message;
@@ -454,6 +517,15 @@
     function setQuotaStatus(message, type = "") {
       quotaStatus.textContent = message;
       quotaStatus.className = "status" + (type ? " " + type : "");
+    }
+
+    function setButtonsDisabled(disabled) {
+      submitBtn.disabled = disabled;
+      regenBottomBtn.disabled = disabled;
+      clearSavedBtn.disabled = disabled;
+      document.querySelectorAll(".save-btn").forEach((button) => {
+        button.disabled = disabled;
+      });
     }
 
     function escapeHtml(value) {
@@ -536,30 +608,141 @@
       `).join("");
     }
 
-    function renderDays(days) {
-      daysList.innerHTML = days.map((day) => `
-        <div class="item">
-          <div class="item-top">
-            <strong>Jour ${escapeHtml(day.day)}</strong>
-            <small>${escapeHtml(formatStatus(day.status))}</small>
-          </div>
-          <div><strong>${escapeHtml(day.topic)}</strong></div>
-          <div style="margin-top: 6px;">${escapeHtml(day.angle)}</div>
-          <div class="meta-line">
-            <span class="meta-badge">${escapeHtml(day.pillar)}</span>
-            <span class="meta-badge">${escapeHtml(day.format)}</span>
-            <span class="meta-badge">${escapeHtml(formatContentType(day.content_type))}</span>
-            <span class="meta-badge">${escapeHtml(formatDepth(day.depth))}</span>
-            <span class="meta-badge">objectif : ${escapeHtml(formatGoal(day.goal))}</span>
-            <span class="meta-badge">${escapeHtml(formatEvergreenLabel(day.evergreen))}</span>
-          </div>
-        </div>
-      `).join("");
+    function getIdeaKey(day) {
+      return [
+        day.topic || "",
+        day.angle || "",
+        day.pillar || "",
+        day.format || "",
+        day.goal || ""
+      ].join("||");
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    function isSaved(day) {
+      const key = getIdeaKey(day);
+      return savedIdeas.some((item) => item.key === key);
+    }
 
+    function addSavedIdea(day) {
+      const key = getIdeaKey(day);
+      if (savedIdeas.some((item) => item.key === key)) {
+        return;
+      }
+
+      savedIdeas.push({
+        key,
+        data: { ...day }
+      });
+
+      renderDays(currentDays);
+      renderSavedIdeas();
+    }
+
+    function removeSavedIdea(key) {
+      savedIdeas = savedIdeas.filter((item) => item.key !== key);
+      renderDays(currentDays);
+      renderSavedIdeas();
+    }
+
+    function renderDays(days) {
+      currentDays = days;
+
+      daysList.innerHTML = days.map((day) => {
+        const saved = isSaved(day);
+
+        return `
+          <div class="item ${saved ? "saved" : ""}">
+            <div class="item-top">
+              <strong>Jour ${escapeHtml(day.day)}</strong>
+              <small>${escapeHtml(formatStatus(day.status))}</small>
+            </div>
+            <div><strong>${escapeHtml(day.topic)}</strong></div>
+            <div style="margin-top: 6px;">${escapeHtml(day.angle)}</div>
+            <div class="meta-line">
+              <span class="meta-badge">${escapeHtml(day.pillar)}</span>
+              <span class="meta-badge">${escapeHtml(day.format)}</span>
+              <span class="meta-badge">${escapeHtml(formatContentType(day.content_type))}</span>
+              <span class="meta-badge">${escapeHtml(formatDepth(day.depth))}</span>
+              <span class="meta-badge">objectif : ${escapeHtml(formatGoal(day.goal))}</span>
+              <span class="meta-badge">${escapeHtml(formatEvergreenLabel(day.evergreen))}</span>
+            </div>
+            <div class="item-actions">
+              <button
+                class="button ${saved ? "secondary" : "ghost"} save-btn"
+                type="button"
+                data-key="${escapeHtml(getIdeaKey(day))}"
+              >
+                ${saved ? "Retirer de ma sélection" : "Garder cette idée"}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".save-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.getAttribute("data-key");
+          const idea = currentDays.find((day) => getIdeaKey(day) === key);
+
+          if (!idea) return;
+
+          if (isSaved(idea)) {
+            removeSavedIdea(key);
+          } else {
+            addSavedIdea(idea);
+          }
+        });
+      });
+    }
+
+    function renderSavedIdeas() {
+      const count = savedIdeas.length;
+      savedCount.textContent = `${count} idée${count > 1 ? "s" : ""} gardée${count > 1 ? "s" : ""}`;
+
+      if (!count) {
+        savedEmpty.classList.remove("hidden");
+        savedDaysList.innerHTML = "";
+        return;
+      }
+
+      savedEmpty.classList.add("hidden");
+
+      savedDaysList.innerHTML = savedIdeas.map((item, index) => {
+        const day = item.data;
+
+        return `
+          <div class="item saved">
+            <div class="item-top">
+              <strong>Sélection ${index + 1}</strong>
+              <small>Jour ${escapeHtml(day.day)}</small>
+            </div>
+            <div><strong>${escapeHtml(day.topic)}</strong></div>
+            <div style="margin-top: 6px;">${escapeHtml(day.angle)}</div>
+            <div class="meta-line">
+              <span class="meta-badge">${escapeHtml(day.pillar)}</span>
+              <span class="meta-badge">${escapeHtml(day.format)}</span>
+              <span class="meta-badge">${escapeHtml(formatContentType(day.content_type))}</span>
+              <span class="meta-badge">${escapeHtml(formatDepth(day.depth))}</span>
+              <span class="meta-badge">objectif : ${escapeHtml(formatGoal(day.goal))}</span>
+              <span class="meta-badge">${escapeHtml(formatEvergreenLabel(day.evergreen))}</span>
+            </div>
+            <div class="item-actions">
+              <button class="button secondary" type="button" data-remove-key="${escapeHtml(item.key)}">
+                Retirer de ma sélection
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-remove-key]").forEach((button) => {
+        button.addEventListener("click", () => {
+          removeSavedIdea(button.getAttribute("data-remove-key"));
+        });
+      });
+    }
+
+    async function generateCalendar() {
       const payload = {
         activity: form.activity.value.trim(),
         audience: form.audience.value.trim(),
@@ -569,18 +752,14 @@
         angle: form.angle.value.trim()
       };
 
-      submitBtn.disabled = true;
+      setButtonsDisabled(true);
       setStatus("Génération de ton calendrier éditorial...");
       setQuotaStatus("");
-      emptyState.classList.remove("hidden");
-      resultBlock.classList.add("hidden");
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
@@ -602,19 +781,33 @@
         resultBlock.classList.remove("hidden");
         setStatus("Calendrier généré avec succès.", "success");
       } catch (error) {
-        emptyState.classList.remove("hidden");
-        resultBlock.classList.add("hidden");
-
         if (error.message.startsWith("API_429::")) {
           setStatus(error.message.replace("API_429::", ""), "error");
-          setQuotaStatus("Tu as atteint la limite du jour.");
         } else {
           setStatus("Impossible de générer le calendrier. " + error.message, "error");
         }
+        setQuotaStatus("");
       } finally {
-        submitBtn.disabled = false;
+        setButtonsDisabled(false);
       }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      await generateCalendar();
     });
+
+    regenBottomBtn.addEventListener("click", async () => {
+      await generateCalendar();
+    });
+
+    clearSavedBtn.addEventListener("click", () => {
+      savedIdeas = [];
+      renderDays(currentDays);
+      renderSavedIdeas();
+    });
+
+    renderSavedIdeas();
   </script>
 </body>
 </html> 

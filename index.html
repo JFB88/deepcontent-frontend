@@ -312,7 +312,7 @@
     <section class="hero">
       <h1>30 jours de contenu utile à partir de ton expertise.</h1>
       <p>
-        Génère un calendrier éditorial structuré à partir de ton positionnement, ton audience, et ton objectif business.
+        Génère un calendrier éditorial structuré à partir de ton positionnement, ton audience et ton objectif business.
       </p>
     </section>
 
@@ -324,39 +324,69 @@
             Renseigne ton positionnement, puis génère un calendrier éditorial de 30 jours prêt à l’emploi.
           </p>
 
-          <form id="calendarForm" class="grid">
+          <form id="calendarForm" class="grid" autocomplete="off">
             <div class="grid two">
               <div class="field">
                 <label for="activity">Activité</label>
-                <input id="activity" name="activity" placeholder="consultant B2B" required />
+                <input
+                  id="activity"
+                  name="activity"
+                  placeholder="consultant B2B"
+                  required
+                  autocomplete="organization-title"
+                />
               </div>
 
               <div class="field">
                 <label for="audience">Audience</label>
-                <input id="audience" name="audience" placeholder="fondateurs SaaS" required />
+                <input
+                  id="audience"
+                  name="audience"
+                  placeholder="fondateurs SaaS"
+                  required
+                />
               </div>
             </div>
 
             <div class="grid two">
               <div class="field">
                 <label for="main_goal">Objectif principal</label>
-                <input id="main_goal" name="main_goal" placeholder="signer 3 clients" required />
+                <input
+                  id="main_goal"
+                  name="main_goal"
+                  placeholder="signer 3 clients"
+                  required
+                />
               </div>
 
               <div class="field">
                 <label for="platform">Plateforme</label>
-                <input id="platform" name="platform" placeholder="LinkedIn" required />
+                <input
+                  id="platform"
+                  name="platform"
+                  placeholder="LinkedIn"
+                  required
+                />
               </div>
             </div>
 
             <div class="field">
               <label for="tone">Ton</label>
-              <input id="tone" name="tone" placeholder="direct, clair, pro" required />
+              <input
+                id="tone"
+                name="tone"
+                placeholder="direct, clair, pro"
+                required
+              />
             </div>
 
             <div class="field">
               <label for="angle">Angle</label>
-              <textarea id="angle" name="angle" placeholder="contenu de fond et preuve"></textarea>
+              <textarea
+                id="angle"
+                name="angle"
+                placeholder="contenu de fond et preuve"
+              ></textarea>
             </div>
 
             <div class="actions">
@@ -426,6 +456,37 @@
         .replaceAll("'", "&#039;");
     }
 
+    function formatGoal(goal) {
+      if (goal === "visibilite") return "visibilité";
+      if (goal === "credibilite") return "crédibilité";
+      if (goal === "conversion") return "conversion";
+      return "non défini";
+    }
+
+    function formatDepth(depth) {
+      if (depth === "deep_dive") return "approfondi";
+      if (depth === "standard") return "standard";
+      return depth || "non défini";
+    }
+
+    function formatContentType(contentType) {
+      if (contentType === "educatif") return "éducatif";
+      if (contentType === "preuve") return "preuve";
+      if (contentType === "opinion") return "opinion";
+      if (contentType === "coulisses") return "coulisses";
+      if (contentType === "promo") return "promo";
+      return contentType || "non défini";
+    }
+
+    function formatStatus(status) {
+      if (status === "idea") return "idée";
+      return status || "—";
+    }
+
+    function formatEvergreenLabel(value) {
+      return value ? "evergreen" : "ponctuel";
+    }
+
     function renderMeta(meta) {
       resultMeta.innerHTML = `
         <div class="item">
@@ -460,16 +521,17 @@
         <div class="item">
           <div class="item-top">
             <strong>Jour ${escapeHtml(day.day)}</strong>
-            <small>${escapeHtml(day.status)}</small>
+            <small>${escapeHtml(formatStatus(day.status))}</small>
           </div>
           <div><strong>${escapeHtml(day.topic)}</strong></div>
           <div style="margin-top: 6px;">${escapeHtml(day.angle)}</div>
           <div class="meta-line">
             <span class="meta-badge">${escapeHtml(day.pillar)}</span>
             <span class="meta-badge">${escapeHtml(day.format)}</span>
-            <span class="meta-badge">${escapeHtml(day.content_type)}</span>
-            <span class="meta-badge">${escapeHtml(day.depth)}</span>
-            <span class="meta-badge">${day.evergreen ? "evergreen" : "ponctuel"}</span>
+            <span class="meta-badge">${escapeHtml(formatContentType(day.content_type))}</span>
+            <span class="meta-badge">${escapeHtml(formatDepth(day.depth))}</span>
+            <span class="meta-badge">objectif : ${escapeHtml(formatGoal(day.goal))}</span>
+            <span class="meta-badge">${escapeHtml(formatEvergreenLabel(day.evergreen))}</span>
           </div>
         </div>
       `).join("");
@@ -524,4 +586,4 @@
     });
   </script>
 </body>
-</html>
+</html> 

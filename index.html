@@ -173,7 +173,7 @@
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       margin-top: 18px;
     }
 
@@ -188,6 +188,7 @@
       font-weight: 700;
       width: 100%;
       min-height: 52px;
+      cursor: pointer;
     }
 
     .button:hover {
@@ -196,6 +197,7 @@
 
     .button:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .status {
@@ -392,6 +394,7 @@
             <div class="actions">
               <button class="button" id="submitBtn" type="submit">Générer le calendrier</button>
               <div class="status" id="status"></div>
+              <div class="status" id="quotaStatus"></div>
             </div>
           </form>
         </div>
@@ -436,6 +439,7 @@
     const form = document.getElementById("calendarForm");
     const submitBtn = document.getElementById("submitBtn");
     const statusEl = document.getElementById("status");
+    const quotaStatus = document.getElementById("quotaStatus");
     const emptyState = document.getElementById("emptyState");
     const resultBlock = document.getElementById("resultBlock");
     const resultMeta = document.getElementById("resultMeta");
@@ -445,6 +449,11 @@
     function setStatus(message, type = "") {
       statusEl.textContent = message;
       statusEl.className = "status" + (type ? " " + type : "");
+    }
+
+    function setQuotaStatus(message, type = "") {
+      quotaStatus.textContent = message;
+      quotaStatus.className = "status" + (type ? " " + type : "");
     }
 
     function escapeHtml(value) {
@@ -485,6 +494,17 @@
 
     function formatEvergreenLabel(value) {
       return value ? "evergreen" : "ponctuel";
+    }
+
+    function renderQuota(quota) {
+      if (!quota) {
+        setQuotaStatus("");
+        return;
+      }
+
+      const remaining = Number(quota.remaining ?? 0);
+      const plural = remaining > 1 ? "s" : "";
+      setQuotaStatus(`Il te reste ${remaining} génération${plural} aujourd’hui.`);
     }
 
     function renderMeta(meta) {
@@ -551,6 +571,7 @@
 
       submitBtn.disabled = true;
       setStatus("Génération de ton calendrier éditorial...");
+      setQuotaStatus("");
       emptyState.classList.remove("hidden");
       resultBlock.classList.add("hidden");
 
@@ -563,15 +584,19 @@
           body: JSON.stringify(payload)
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
+          if (response.status === 429 && data?.detail?.message) {
+            throw new Error("API_429::" + data.detail.message);
+          }
           throw new Error("Erreur API " + response.status);
         }
-
-        const data = await response.json();
 
         renderMeta(data.meta);
         renderPillars(data.meta.pillars || []);
         renderDays(data.days || []);
+        renderQuota(data.quota);
 
         emptyState.classList.add("hidden");
         resultBlock.classList.remove("hidden");
@@ -579,7 +604,13 @@
       } catch (error) {
         emptyState.classList.remove("hidden");
         resultBlock.classList.add("hidden");
-        setStatus("Impossible de générer le calendrier. " + error.message, "error");
+
+        if (error.message.startsWith("API_429::")) {
+          setStatus(error.message.replace("API_429::", ""), "error");
+          setQuotaStatus("Tu as atteint la limite du jour.");
+        } else {
+          setStatus("Impossible de générer le calendrier. " + error.message, "error");
+        }
       } finally {
         submitBtn.disabled = false;
       }

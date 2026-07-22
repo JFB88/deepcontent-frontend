@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DeepContent AI</title>
-  <meta name="description" content="DeepContent AI — substance content, not noise." />
+  <meta name="description" content="DeepContent AI — du contenu de fond, pas du bruit." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -310,47 +310,47 @@
     </header>
 
     <section class="hero">
-      <h1>30 days of useful content from your expertise.</h1>
+      <h1>30 jours de contenu utile à partir de ton expertise.</h1>
       <p>
-        Generate a structured content calendar from your positioning, audience, tone and business goal.
+        Génère un calendrier éditorial structuré à partir de ton positionnement, ton audience, ton ton et ton objectif business.
       </p>
     </section>
 
     <section class="layout">
       <article class="card">
         <div class="card-inner">
-          <h2>Generator</h2>
+          <h2>Générateur</h2>
           <p class="card-subtitle">
-            Fill in your positioning, then generate a ready-to-use 30-day calendar.
+            Renseigne ton positionnement, puis génère un calendrier éditorial de 30 jours prêt à l’emploi.
           </p>
 
           <form id="calendarForm" class="grid">
             <div class="grid two">
               <div class="field">
-                <label for="activity">Activity</label>
+                <label for="activity">Activité</label>
                 <input id="activity" name="activity" placeholder="consultant B2B" required />
               </div>
 
               <div class="field">
                 <label for="audience">Audience</label>
-                <input id="audience" name="audience" placeholder="founders SaaS" required />
+                <input id="audience" name="audience" placeholder="fondateurs SaaS" required />
               </div>
             </div>
 
             <div class="grid two">
               <div class="field">
-                <label for="main_goal">Main goal</label>
+                <label for="main_goal">Objectif principal</label>
                 <input id="main_goal" name="main_goal" placeholder="signer 3 clients" required />
               </div>
 
               <div class="field">
-                <label for="platform">Platform</label>
+                <label for="platform">Plateforme</label>
                 <input id="platform" name="platform" placeholder="LinkedIn" required />
               </div>
             </div>
 
             <div class="field">
-              <label for="tone">Tone</label>
+              <label for="tone">Ton</label>
               <input id="tone" name="tone" placeholder="direct, clair, pro" required />
             </div>
 
@@ -360,7 +360,7 @@
             </div>
 
             <div class="actions">
-              <button class="button" id="submitBtn" type="submit">Generate calendar</button>
+              <button class="button" id="submitBtn" type="submit">Générer le calendrier</button>
               <div class="status" id="status"></div>
             </div>
           </form>
@@ -369,31 +369,31 @@
 
       <article class="card">
         <div class="card-inner">
-          <h2>Result</h2>
+          <h2>Résultat</h2>
           <p class="card-subtitle">
-            Your generated content plan will appear here.
+            Ton plan de contenu généré s’affichera ici.
           </p>
 
           <div id="emptyState" class="empty">
-            No calendar generated yet.
+            Aucun calendrier généré pour le moment.
           </div>
 
           <div id="resultBlock" class="hidden">
             <div class="result-meta" id="resultMeta"></div>
 
             <section style="margin-bottom: 20px;">
-              <div class="pill">Pillars</div>
+              <div class="pill">Piliers</div>
               <div class="pillars" id="pillarsList" style="margin-top: 12px;"></div>
             </section>
 
             <section>
-              <div class="pill">30-day plan</div>
+              <div class="pill">Plan sur 30 jours</div>
               <div class="days" id="daysList" style="margin-top: 12px;"></div>
             </section>
           </div>
 
           <p class="footer-note">
-            Backend: Render API connected live.
+            Backend : API Render connectée en direct.
           </p>
         </div>
       </article>
@@ -433,10 +433,10 @@
             <strong>${escapeHtml(meta.activity)}</strong>
             <small>${escapeHtml(meta.platform)}</small>
           </div>
-          <div><strong>Audience:</strong> ${escapeHtml(meta.audience)}</div>
-          <div><strong>Main goal:</strong> ${escapeHtml(meta.main_goal)}</div>
-          <div><strong>Tone:</strong> ${escapeHtml(meta.tone)}</div>
-          <div><strong>Angle:</strong> ${escapeHtml(meta.angle || "—")}</div>
+          <div><strong>Audience :</strong> ${escapeHtml(meta.audience)}</div>
+          <div><strong>Objectif principal :</strong> ${escapeHtml(meta.main_goal)}</div>
+          <div><strong>Ton :</strong> ${escapeHtml(meta.tone)}</div>
+          <div><strong>Angle :</strong> ${escapeHtml(meta.angle || "—")}</div>
         </div>
       `;
     }
@@ -459,7 +459,7 @@
       daysList.innerHTML = days.map((day) => `
         <div class="item">
           <div class="item-top">
-            <strong>Day ${escapeHtml(day.day)}</strong>
+            <strong>Jour ${escapeHtml(day.day)}</strong>
             <small>${escapeHtml(day.status)}</small>
           </div>
           <div><strong>${escapeHtml(day.topic)}</strong></div>
@@ -469,7 +469,7 @@
             <span class="meta-badge">${escapeHtml(day.format)}</span>
             <span class="meta-badge">${escapeHtml(day.content_type)}</span>
             <span class="meta-badge">${escapeHtml(day.depth)}</span>
-            <span class="meta-badge">${day.evergreen ? "evergreen" : "timely"}</span>
+            <span class="meta-badge">${day.evergreen ? "evergreen" : "ponctuel"}</span>
           </div>
         </div>
       `).join("");
@@ -488,7 +488,7 @@
       };
 
       submitBtn.disabled = true;
-      setStatus("Generating your content calendar...");
+      setStatus("Génération de ton calendrier éditorial...");
       emptyState.classList.remove("hidden");
       resultBlock.classList.add("hidden");
 
@@ -502,7 +502,7 @@
         });
 
         if (!response.ok) {
-          throw new Error("API error " + response.status);
+          throw new Error("Erreur API " + response.status);
         }
 
         const data = await response.json();
@@ -513,11 +513,11 @@
 
         emptyState.classList.add("hidden");
         resultBlock.classList.remove("hidden");
-        setStatus("Calendar generated successfully.", "success");
+        setStatus("Calendrier généré avec succès.", "success");
       } catch (error) {
         emptyState.classList.remove("hidden");
         resultBlock.classList.add("hidden");
-        setStatus("Unable to generate the calendar. " + error.message, "error");
+        setStatus("Impossible de générer le calendrier. " + error.message, "error");
       } finally {
         submitBtn.disabled = false;
       }

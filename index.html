@@ -20,6 +20,9 @@
       --primary: #01696f;
       --primary-hover: #0c4e54;
       --primary-soft: #e4f0ef;
+      --regen: #8a5b00;
+      --regen-hover: #6f4700;
+      --regen-soft: #f3ead7;
       --success: #2f6b2f;
       --error: #9e2f5f;
       --radius: 16px;
@@ -220,6 +223,25 @@
       background: var(--primary-soft);
     }
 
+    .button.regen {
+      background: var(--regen);
+      color: white;
+    }
+
+    .button.regen:hover {
+      background: var(--regen-hover);
+    }
+
+    .button.regen-soft {
+      background: var(--regen-soft);
+      color: var(--regen);
+      border: 1px solid rgba(138, 91, 0, 0.2);
+    }
+
+    .button.regen-soft:hover {
+      background: #eadcbc;
+    }
+
     .status {
       min-height: 22px;
       font-size: 14px;
@@ -228,6 +250,11 @@
 
     .status.success { color: var(--success); }
     .status.error { color: var(--error); }
+
+    .status.loading {
+      color: var(--regen);
+      font-weight: 600;
+    }
 
     .empty {
       color: var(--muted);
@@ -755,7 +782,7 @@
         button.dataset.bound = "true";
 
         button.addEventListener("click", async () => {
-          await generateCalendar();
+          await generateCalendar(false);
         });
       });
     }
@@ -810,7 +837,7 @@
         </div>
 
         <div class="generation-actions">
-          <button class="button secondary regen-btn" type="button">Regénérer ce calendrier</button>
+          <button class="button regen regen-btn" type="button">Regénérer ce calendrier</button>
         </div>
       `;
 
@@ -822,7 +849,7 @@
       block.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    async function generateCalendar() {
+    async function generateCalendar(isFirstGeneration = false) {
       const payload = {
         activity: form.activity.value.trim(),
         audience: form.audience.value.trim(),
@@ -833,8 +860,12 @@
       };
 
       setGlobalButtonsDisabled(true);
-      setStatus("Génération de ton calendrier éditorial...");
-      setQuotaStatus("");
+
+      if (isFirstGeneration && generationCount === 0) {
+        setStatus("Premier chargement : le serveur se réveille, cela peut prendre jusqu’à 30 secondes.", "loading");
+      } else {
+        setStatus("Génération du calendrier en cours...", "loading");
+      }
 
       try {
         const response = await fetch(API_URL, {
@@ -872,10 +903,10 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      await generateCalendar();
+      await generateCalendar(true);
     });
 
     renderSavedIdeas();
   </script>
 </body>
-                  </html>
+              </html>

@@ -1,0 +1,10 @@
+{
+  "name": "DeepContent AI",
+  "short_name": "DeepContent",
+  "description": "DeepContent AI — du contenu de fond, pas du bruit.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f6f2",
+  "theme_color": "#01696f",
+  "lang": "fr"
+}
